@@ -23,17 +23,17 @@ export class ExpensesService {
     },
   ];
 
-  getAllUsers() {
+  getAllExpenses() {
     return this.expenses;
   }
 
-  getUserById(id: number) {
+  getExpenseById(id: number) {
     const expense = this.expenses.find((el) => el.id === id);
     if (!expense) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     return expense;
   }
 
-  createUser(body: CreateExpense) {
+  createExpense(body: CreateExpense) {
     const lastId = this.expenses[this.expenses.length - 1]?.id || 0;
     const totalPrice = Number(body.price) * Number(body.quantity);
     const newExpense = {
@@ -48,7 +48,7 @@ export class ExpensesService {
     return newExpense;
   }
 
-  deleteUser(id: number) {
+  deleteExpense(id: number) {
     const index = this.expenses.findIndex((el) => el.id === id);
     if (index === -1)
       throw new HttpException('User id is invalid', HttpStatus.BAD_REQUEST);
@@ -56,7 +56,7 @@ export class ExpensesService {
     return deletedExpense;
   }
 
-  updateUser(id: number, body: UpdateExpense) {
+  updateExpense(id: number, body: UpdateExpense) {
     const index = this.expenses.findIndex((el) => el.id === id);
     if (index === -1)
       throw new HttpException('User id is invalid', HttpStatus.BAD_REQUEST);
