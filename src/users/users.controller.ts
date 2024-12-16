@@ -1,7 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
+import { RolesGuard } from './rolesGuard';
 
 @Controller('users')
+// @UseGuards(RolesGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
   @Get()
@@ -9,7 +21,7 @@ export class UsersController {
     return this.usersService.getAllUsers();
   }
 
-  @Get(":id")
+  @Get(':id')
   getUserById(@Param() params) {
     return this.usersService.getUserById(Number(params.id));
   }
@@ -19,14 +31,13 @@ export class UsersController {
     return this.usersService.createUser(body);
   }
 
-  @Delete(":id")
-  deleteuser(@Param() params) {
-    return this.usersService.deleteUser(Number(params.id));
+  @Delete(':id')
+  deleteuser(@Param('id', ParseIntPipe) id) {
+    return this.usersService.deleteUser(id);
   }
-  
-  @Put(":id")
-  updateUser(@Param() params, @Body() body) {
-    return this.usersService.updateUser(Number(params.id), body);
+
+  @Put(':id')
+  updateUser(@Param('id', ParseIntPipe) id, @Body() body) {
+    return this.usersService.updateUser(id, body);
   }
 }
-
