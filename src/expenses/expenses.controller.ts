@@ -1,5 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ExpensesService } from './expenses.service';
+import { HasUser } from 'src/guards/hasUser.guard';
 
 @Controller('expenses')
 export class ExpensesController {
@@ -9,24 +20,25 @@ export class ExpensesController {
     return this.ExpensesService.getAllExpenses();
   }
 
-  @Get(":id")
+  @Get(':id')
   getUserById(@Param() params) {
     return this.ExpensesService.getExpenseById(Number(params.id));
   }
 
   @Post()
-  createuser(@Body() body) {
-    return this.ExpensesService.createExpense(body);
+  @UseGuards(HasUser)
+  createuser(@Body() body, @Req() request) {
+    const userId = request.userId;    
+    return this.ExpensesService.createExpense(body, userId);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   deleteuser(@Param() params) {
     return this.ExpensesService.deleteExpense(Number(params.id));
   }
-  
-  @Put(":id")
+
+  @Put(':id')
   updateUser(@Param() params, @Body() body) {
     return this.ExpensesService.updateExpense(Number(params.id), body);
   }
 }
-

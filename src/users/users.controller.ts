@@ -10,10 +10,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { RolesGuard } from './rolesGuard';
+import { CreateUserDto } from './DTOs/create-user.dto';
+import { UpdateUserDto } from './DTOs/update-user.dto';
 
 @Controller('users')
-// @UseGuards(RolesGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
   @Get()
@@ -27,7 +27,7 @@ export class UsersController {
   }
 
   @Post()
-  createuser(@Body() body) {
+  createuser(@Body() body : CreateUserDto) {
     return this.usersService.createUser(body);
   }
 
@@ -37,7 +37,7 @@ export class UsersController {
   }
 
   @Put(':id')
-  updateUser(@Param('id', ParseIntPipe) id, @Body() body) {
+  updateUser(@Param('id', ParseIntPipe) id, @Body() body: UpdateUserDto) {
     return this.usersService.updateUser(id, body);
   }
 }

@@ -12,6 +12,7 @@ export class UsersService {
       email: 'gi@gmail.com',
       phoneNumber: '555555555',
       gender: 'M',
+      subscribedOn: 'Tue Nov 01 2024 15:18:41 GMT+0400 (Georgia Standard Time)',
     },
     {
       id: 2,
@@ -20,6 +21,7 @@ export class UsersService {
       email: 'la@gmail.com',
       phoneNumber: '555551111',
       gender: 'F',
+      subscribedOn: 'Tue Dec 17 2024 15:18:41 GMT+0400 (Georgia Standard Time)',
     },
   ];
 
@@ -33,8 +35,9 @@ export class UsersService {
     return user;
   }
 
-  createUser(body: CreateUserDto) {
+  createUser(body) {
     const lastId = this.users[this.users.length - 1]?.id || 0;
+    const date = new Date();
     const newUser = {
       id: lastId + 1,
       firstName: body.firstName,
@@ -42,7 +45,9 @@ export class UsersService {
       email: body.email,
       phoneNumber: body.phoneNumber,
       gender: body.gender,
+      subscribedOn: date.toString(),
     };
+    
     this.users.push(newUser);
     return newUser;
   }
@@ -55,7 +60,7 @@ export class UsersService {
     return deletedUser;
   }
 
-  updateUser(id: number, body: UpdateUserDto) {
+  updateUser(id: number, body) {
     const index = this.users.findIndex((el) => el.id === id);
     if (index === -1)
       throw new HttpException('User id is invalid', HttpStatus.BAD_REQUEST);

@@ -1,9 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateExpense } from './DTOs/create-expenses.dto';
 import { UpdateExpense } from './DTOs/update-expenses.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ExpensesService {
+  constructor(private usersService: UsersService) {}
+
   private expenses = [
     {
       id: 1,
@@ -12,6 +15,7 @@ export class ExpensesService {
       quantity: 4,
       price: 5,
       totalPrice: 20,
+      user: "la@gmail.com"
     },
     {
       id: 2,
@@ -20,6 +24,7 @@ export class ExpensesService {
       quantity: 1,
       price: 10,
       totalPrice: 10,
+      user: "la@gmail.com"
     },
   ];
 
@@ -33,16 +38,19 @@ export class ExpensesService {
     return expense;
   }
 
-  createExpense(body: CreateExpense) {
+  createExpense(body: CreateExpense, userId: number) {
     const lastId = this.expenses[this.expenses.length - 1]?.id || 0;
     const totalPrice = Number(body.price) * Number(body.quantity);
+    const user = this.usersService.getUserById(userId);
+
     const newExpense = {
       id: lastId + 1,
       category: body.category,
       productName: body.productName,
       quantity: body.quantity,
       price: body.price,
-      totalPrice
+      totalPrice,
+      user: user.email
     };
     this.expenses.push(newExpense);
     return newExpense;
