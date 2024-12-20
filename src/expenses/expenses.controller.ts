@@ -11,6 +11,9 @@ import {
 } from '@nestjs/common';
 import { ExpensesService } from './expenses.service';
 import { HasUser } from 'src/guards/hasUser.guard';
+import { HasValidUserId } from './hasValidUserId.guard';
+import { CreateExpense } from './DTOs/create-expenses.dto';
+import { UpdateExpense } from './DTOs/update-expenses.dto';
 
 @Controller('expenses')
 export class ExpensesController {
@@ -22,23 +25,23 @@ export class ExpensesController {
 
   @Get(':id')
   getUserById(@Param() params) {
-    return this.ExpensesService.getExpenseById(Number(params.id));
+    return this.ExpensesService.getExpenseById(params.id);
   }
 
   @Post()
-  @UseGuards(HasUser)
-  createuser(@Body() body, @Req() request) {
+  @UseGuards(HasValidUserId)
+  createuser(@Body() body: CreateExpense, @Req() request) {
     const userId = request.userId;    
     return this.ExpensesService.createExpense(body, userId);
   }
 
   @Delete(':id')
   deleteuser(@Param() params) {
-    return this.ExpensesService.deleteExpense(Number(params.id));
+    return this.ExpensesService.deleteExpense(params.id);
   }
 
   @Put(':id')
-  updateUser(@Param() params, @Body() body) {
-    return this.ExpensesService.updateExpense(Number(params.id), body);
+  updateUser(@Param() params, @Body() body: UpdateExpense) {
+    return this.ExpensesService.updateExpense(params.id, body);
   }
 }

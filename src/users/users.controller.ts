@@ -16,6 +16,12 @@ import { UpdateUserDto } from './DTOs/update-user.dto';
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
+  
+  @Post()
+  createuser(@Body() body : CreateUserDto) {
+    return this.usersService.createUser(body);
+  }
+
   @Get()
   getUsers() {
     return this.usersService.getAllUsers();
@@ -23,12 +29,12 @@ export class UsersController {
 
   @Get(':id')
   getUserById(@Param() params) {
-    return this.usersService.getUserById(Number(params.id));
+    return this.usersService.getUserById(params.id);
   }
 
-  @Post()
-  createuser(@Body() body : CreateUserDto) {
-    return this.usersService.createUser(body);
+  @Put(':id')
+  updateUser(@Param('id', ParseIntPipe) id, @Body() body: UpdateUserDto) {
+    return this.usersService.updateUser(id, body);
   }
 
   @Delete(':id')
@@ -36,8 +42,4 @@ export class UsersController {
     return this.usersService.deleteUser(id);
   }
 
-  @Put(':id')
-  updateUser(@Param('id', ParseIntPipe) id, @Body() body: UpdateUserDto) {
-    return this.usersService.updateUser(id, body);
-  }
 }

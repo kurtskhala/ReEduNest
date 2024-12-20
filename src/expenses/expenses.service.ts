@@ -1,84 +1,78 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateExpense } from './DTOs/create-expenses.dto';
 import { UpdateExpense } from './DTOs/update-expenses.dto';
 import { UsersService } from 'src/users/users.service';
+import { Expense } from './schema/expenses.schema';
+import { isValidObjectId, Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class ExpensesService {
-  constructor(private usersService: UsersService) {}
-
-  private expenses = [
-    {
-      id: 1,
-      category: 'Food',
-      productName: 'Egg',
-      quantity: 4,
-      price: 5,
-      totalPrice: 20,
-      user: "la@gmail.com"
-    },
-    {
-      id: 2,
-      category: 'Cleaning',
-      productName: 'Shampoo',
-      quantity: 1,
-      price: 10,
-      totalPrice: 10,
-      user: "la@gmail.com"
-    },
-  ];
+  constructor(
+    @InjectModel(Expense.name) private expenseModel: Model<Expense>,
+    private usersService: UsersService,
+  ) {}
 
   getAllExpenses() {
-    return this.expenses;
+    return this.expenseModel.find();
   }
 
-  getExpenseById(id: number) {
-    const expense = this.expenses.find((el) => el.id === id);
-    if (!expense) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    return expense;
+  async getExpenseById(id) {
+    if (!isValidObjectId(id))
+      throw new BadGatewayException('Not valid id is provided');
+    const expense = await this.expenseModel.findById(id).populate("user");
+    return expense || {};
   }
 
-  createExpense(body: CreateExpense, userId: number) {
-    const lastId = this.expenses[this.expenses.length - 1]?.id || 0;
+  async createExpense(body: CreateExpense, userId) {
+    const user = await this.usersService.getUserById(userId);
     const totalPrice = Number(body.price) * Number(body.quantity);
-    const user = this.usersService.getUserById(userId);
-
-    const newExpense = {
-      id: lastId + 1,
-      category: body.category,
-      productName: body.productName,
-      quantity: body.quantity,
-      price: body.price,
-      totalPrice,
-      user: user.email
-    };
-    this.expenses.push(newExpense);
-    return newExpense;
+    if (!Object.keys(user).length)
+      throw new BadRequestException('user not found');
+    if ('_id' in user) {
+      const expense = await this.expenseModel.create({
+        ...body,
+        totalPrice,
+        user: user._id,
+      });
+      return expense;
+    }
   }
 
-  deleteExpense(id: number) {
-    const index = this.expenses.findIndex((el) => el.id === id);
-    if (index === -1)
-      throw new HttpException('User id is invalid', HttpStatus.BAD_REQUEST);
-    const deletedExpense = this.expenses.splice(index, 1);
-    return deletedExpense;
+  async deleteExpense(id) {
+    if (!isValidObjectId(id))
+      throw new BadGatewayException('Not valid id is provided');
+    const expense = await this.expenseModel.findByIdAndDelete(id);
+    return { message: 'expense deleted', data: expense };
   }
 
-  updateExpense(id: number, body: UpdateExpense) {
-    const index = this.expenses.findIndex((el) => el.id === id);
-    if (index === -1)
-      throw new HttpException('User id is invalid', HttpStatus.BAD_REQUEST);
-    const updatedExpense = {
-      ...this.expenses[index],
-      ...body,
-    };
-    const updatedTotal = Number(updatedExpense.price) * Number(updatedExpense.quantity);
-    const updatedExpenseWithTotal = {
-        ...updatedExpense,
-        totalPrice: updatedTotal
-    };
+  async updateExpense(id: number, body: UpdateExpense) {
+    if (!isValidObjectId(id))
+      throw new BadGatewayException('Not valid id is provided');
 
-    this.expenses[index] = updatedExpenseWithTotal;
-    return updatedExpenseWithTotal;
+    const existingExpense = await this.expenseModel.findById(id);
+    if (!existingExpense) {
+      throw new HttpException('Expense not found', HttpStatus.NOT_FOUND);
+    }
+    const updatedPrice = body.price || existingExpense.price;
+    const updatedQuantity = body.quantity || existingExpense.quantity;
+    const updatedTotal = Number(updatedPrice) * Number(updatedQuantity);
+
+    const updatedBody = { ...body, totalPrice: updatedTotal };
+
+    const updatedExpense = await this.expenseModel.findByIdAndUpdate(
+      id,
+      updatedBody,
+      {
+        new: true,
+      },
+    );
+    return { message: 'expense updated successfully', data: updatedExpense };
   }
 }

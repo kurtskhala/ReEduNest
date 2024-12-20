@@ -41,7 +41,8 @@ export class PostService {
       id: lastId + 1,
       title: createPostDto.title,
       content: createPostDto.content,
-      userEmail: user.email,
+      // problem
+      userEmail: "1",
     };
 
     this.posts.push(newPost);

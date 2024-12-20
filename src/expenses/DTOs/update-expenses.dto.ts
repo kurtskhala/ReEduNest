@@ -1,6 +1,4 @@
-export class UpdateExpense {
-    category?: string
-    productName?: string
-    quantity?: number
-    price?: number
-}
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateExpense } from './create-expenses.dto';
+
+export class UpdateExpense extends PartialType(CreateExpense) {}

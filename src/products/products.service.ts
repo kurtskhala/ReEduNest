@@ -60,7 +60,8 @@ export class ProductsService {
     }
 
     const user = this.usersService.getUserById(userId);
-    const subscribedOn = new Date(user.subscribedOn);
+    // problem
+    const subscribedOn = new Date();
     const today = new Date();
     const differenceInMs = today.getTime() - subscribedOn.getTime();
     const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));

@@ -1,74 +1,53 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './DTOs/create-user.dto';
-import { UpdateUserDto } from './DTOs/update-user.dto';
+import {
+  BadGatewayException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { isValidObjectId, Model } from 'mongoose';
+import { User } from './schema/user.schema';
+import { IUser } from './user.interface';
 
 @Injectable()
 export class UsersService {
-  private users = [
-    {
-      id: 1,
-      firstName: 'Giorgi',
-      lastName: 'Gogava',
-      email: 'gi@gmail.com',
-      phoneNumber: '555555555',
-      gender: 'M',
-      subscribedOn: 'Tue Nov 01 2024 15:18:41 GMT+0400 (Georgia Standard Time)',
-    },
-    {
-      id: 2,
-      firstName: 'Lana',
-      lastName: 'Gogogava',
-      email: 'la@gmail.com',
-      phoneNumber: '555551111',
-      gender: 'F',
-      subscribedOn: 'Tue Dec 17 2024 15:18:41 GMT+0400 (Georgia Standard Time)',
-    },
-  ];
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   getAllUsers() {
-    return this.users;
+    return this.userModel.find();
   }
 
-  getUserById(id: number) {
-    const user = this.users.find((el) => el.id === id);
-    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+  async getUserById(id): Promise<IUser | {}> {
+    if (!isValidObjectId(id))
+      throw new BadGatewayException('Not valid id is provided');
+    const user = (await this.userModel.findById(id));
+    return user || {};
+  }
+
+  async createUser(body) {
+    const existUser = await this.userModel.findOne({
+      email: body.email,
+    });
+    if (existUser) throw new BadGatewayException('user already exists');
+    const user = await this.userModel.create(body);
     return user;
   }
 
-  createUser(body) {
-    const lastId = this.users[this.users.length - 1]?.id || 0;
-    const date = new Date();
-    const newUser = {
-      id: lastId + 1,
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-      phoneNumber: body.phoneNumber,
-      gender: body.gender,
-      subscribedOn: date.toString(),
-    };
-    
-    this.users.push(newUser);
-    return newUser;
+  async deleteUser(id) {
+    if (!isValidObjectId(id))
+      throw new BadGatewayException('Not valid id is provided');
+    const user = await this.userModel.findByIdAndDelete(id);
+    return { message: 'user deleted', data: user };
   }
 
-  deleteUser(id: number) {
-    const index = this.users.findIndex((el) => el.id === id);
-    if (index === -1)
-      throw new HttpException('User id is invalid', HttpStatus.BAD_REQUEST);
-    const deletedUser = this.users.splice(index, 1);
-    return deletedUser;
-  }
-
-  updateUser(id: number, body) {
-    const index = this.users.findIndex((el) => el.id === id);
-    if (index === -1)
-      throw new HttpException('User id is invalid', HttpStatus.BAD_REQUEST);
-    const updatedUser = {
-      ...this.users[index],
-      ...body,
-    };
-    this.users[index] = updatedUser;
-    return updatedUser;
+  async updateUser(id, body) {
+    if (!isValidObjectId(id))
+      throw new BadGatewayException('Not valid id is provided');
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      body,
+      { new: true },
+    );
+    return { message: 'user updated successfully', data: updatedUser };
   }
 }
