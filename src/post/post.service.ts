@@ -1,4 +1,9 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { UsersService } from 'src/users/users.service';
@@ -36,13 +41,14 @@ export class PostService {
   create(createPostDto: CreatePostDto, userId: number) {
     const lastId = this.posts[this.posts.length - 1]?.id || 0;
     const user = this.usersService.getUserById(userId);
-    if(Array.isArray(user)) throw new BadRequestException("user not")
+    if (Array.isArray(user)) throw new BadRequestException('user not');
     const newPost = {
       id: lastId + 1,
       title: createPostDto.title,
       content: createPostDto.content,
-      // problem
-      userEmail: "1",
+      // problem can not type
+      // userEmail: user.email,
+      userEmail: '',
     };
 
     this.posts.push(newPost);

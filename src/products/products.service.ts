@@ -60,7 +60,8 @@ export class ProductsService {
     }
 
     const user = this.usersService.getUserById(userId);
-    // problem
+    // problem can not type
+    // const subscribedOn = new Date(user.createdAt);
     const subscribedOn = new Date();
     const today = new Date();
     const differenceInMs = today.getTime() - subscribedOn.getTime();
