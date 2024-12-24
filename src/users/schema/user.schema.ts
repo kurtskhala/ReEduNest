@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 
 @Schema({ timestamps: true })
 export class User {
@@ -16,6 +17,16 @@ export class User {
 
   @Prop({ type: String })
   gender: string;
+
+  @Prop({ type: Number })
+  age: number;
+
+  @Prop({
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Expense",
+    default: [],
+  })
+  expenses: mongoose.Schema.Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

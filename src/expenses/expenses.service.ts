@@ -26,7 +26,7 @@ export class ExpensesService {
   async getExpenseById(id) {
     if (!isValidObjectId(id))
       throw new BadGatewayException('Not valid id is provided');
-    const expense = await this.expenseModel.findById(id).populate("user");
+    const expense = await this.expenseModel.findById(id).populate('user');
     return expense || {};
   }
 
@@ -41,6 +41,7 @@ export class ExpensesService {
         totalPrice,
         user: user._id,
       });
+      await this.usersService.addExpenseId(user._id, expense._id);
       return expense;
     }
   }
