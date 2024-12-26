@@ -18,7 +18,7 @@ import { QueryParamsAgeDto } from './DTOs/queryParamsAge.dto';
 export class UsersService implements OnModuleInit {
   async onModuleInit() {
     const users = await this.userModel.countDocuments();
-    if (users === 1) {
+    if (false) {
       const usersList = [];
       for (let i = 0; i < 30000; i++) {
         const user = {
@@ -33,6 +33,7 @@ export class UsersService implements OnModuleInit {
       }
       await this.userModel.insertMany(usersList);
     }
+    // await this.userModel.deleteMany();
   }
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
@@ -48,6 +49,11 @@ export class UsersService implements OnModuleInit {
   async getCountUsers() {
     const users = await this.userModel.countDocuments();
     return users;
+  }
+
+  async findOneByEmail(email: string) {
+    const user = await this.userModel.findOne({ email }).select('+password');
+    return user;
   }
 
   async getUserById(id): Promise<IUser | {}> {
