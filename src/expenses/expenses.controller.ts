@@ -14,6 +14,7 @@ import { HasUser } from 'src/guards/hasUser.guard';
 import { HasValidUserId } from './hasValidUserId.guard';
 import { CreateExpense } from './DTOs/create-expenses.dto';
 import { UpdateExpense } from './DTOs/update-expenses.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('expenses')
 export class ExpensesController {
@@ -36,8 +37,11 @@ export class ExpensesController {
   }
 
   @Delete(':id')
-  deleteuser(@Param() params) {
-    return this.ExpensesService.deleteExpense(params.id);
+  @UseGuards(AuthGuard)
+  deleteuser(@Param() params, @Req() request) {    
+    const userId = request.userId;
+    const role = request.role;
+    return this.ExpensesService.deleteExpense(params.id, userId, role);
   }
 
   @Put(':id')

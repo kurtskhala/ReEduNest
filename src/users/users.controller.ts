@@ -17,6 +17,9 @@ import { UpdateUserDto } from './DTOs/update-user.dto';
 import { QueryParamsDto } from './DTOs/queryParams.dto';
 import { QueryParamsAgeDto } from './DTOs/queryParamsAge.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { User } from './users.decotator';
+import { IsAdmin } from 'src/post/permissions.guard';
+import { IsValidMongoId } from './DTOs/isValidMongoId.dto';
 
 @Controller('users')
 export class UsersController {
@@ -57,16 +60,19 @@ export class UsersController {
 
   @Put('')
   @UseGuards(AuthGuard)
-  updateUser(@Req() request, @Body() body: UpdateUserDto) {
-    const userId = request.userId;
-
+  updateUser(@User() userId, @Body() body: UpdateUserDto) {
     return this.usersService.updateUser(userId, body);
   }
 
   @Delete('')
   @UseGuards(AuthGuard)
-  deleteuser(@Req() request) {
-    const userId = request.userId;
+  deleteuser(@User() userId) {
     return this.usersService.deleteUser(userId);
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard, IsAdmin)
+  deleteOtherUser(@Param() params: IsValidMongoId) {
+    return this.usersService.deleteUser(params.id);
   }
 }

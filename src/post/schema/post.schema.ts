@@ -3,24 +3,15 @@ import mongoose from 'mongoose';
 import { User } from 'src/users/schema/user.schema';
 
 @Schema({ timestamps: true })
-export class Expense {
+export class Post {
   @Prop({ Type: String })
-  categoty: string;
+  title: string;
 
   @Prop({ Type: String })
-  productName: string;
-
-  @Prop({ Type: Number })
-  quantity: number;
-
-  @Prop({ Type: Number })
-  price: number;
-
-  @Prop({ Type: Number })
-  totalPrice: number;
+  content: string;
 
   @Prop({ Type: mongoose.Schema.Types.ObjectId, ref: User.name })
   user: mongoose.Schema.Types.ObjectId;
 }
 
-export const ExpenseSchema = SchemaFactory.createForClass(Expense);
+export const PostSchema = SchemaFactory.createForClass(Post);

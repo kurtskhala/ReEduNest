@@ -46,11 +46,19 @@ export class ExpensesService {
     }
   }
 
-  async deleteExpense(id) {
-    if (!isValidObjectId(id))
-      throw new BadGatewayException('Not valid id is provided');
-    const expense = await this.expenseModel.findByIdAndDelete(id);
-    return { message: 'expense deleted', data: expense };
+  async deleteExpense(id, userId, role) {
+    const expense = await this.expenseModel.findById(id);
+
+    if (!expense) {
+      throw new BadGatewayException('Expense not found');
+    }
+
+    if (role === 'admin' || userId === expense.user.toString()) {
+      const deletedExpense = await this.expenseModel.findByIdAndDelete(id);
+      return { message: 'expense deleted', data: deletedExpense };
+    }
+
+    throw new BadGatewayException('Permission denied');
   }
 
   async updateExpense(id: number, body: UpdateExpense) {

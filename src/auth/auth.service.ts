@@ -33,6 +33,7 @@ export class AuthService {
       throw new BadRequestException('Email or passwor is not correct');
     const payload = {
       userId: existUser._id,
+      role: existUser.role
     };
     const accessToken = await this.jwtService.sign(payload, {
       expiresIn: '1h',

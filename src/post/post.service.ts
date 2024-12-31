@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   BadRequestException,
   HttpException,
   HttpStatus,
@@ -7,76 +8,56 @@ import {
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { UsersService } from 'src/users/users.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Post } from './schema/post.schema';
+import mongoose, { isValidObjectId, Model } from 'mongoose';
 
 @Injectable()
 export class PostService {
-  constructor(private usersService: UsersService) {}
-  private posts = [
-    {
-      id: 1,
-      title: 'title1',
-      content: 'random content 1',
-      userEmail: 'gi@gmail.com',
-    },
-    {
-      id: 2,
-      title: 'title2',
-      content: 'random content 2',
-      userEmail: 'la@gmail.com',
-    },
-  ];
+  constructor(
+    @InjectModel(Post.name) private postModel: Model<Post>,
+    private usersService: UsersService,
+  ) {}
 
   findAll() {
-    return this.posts;
+    return this.postModel.find();
   }
 
-  findOne(id: number) {
-    const post = this.posts.find((el) => el.id === id);
+  async findOne(id: mongoose.Schema.Types.ObjectId) {
+    const expense = await this.postModel.findById(id).populate('user');
+    return expense || {};
+  }
+
+  async create(body: CreatePostDto, userId: string) {
+    const user = await this.usersService.getUserById(userId);
+    if (!Object.keys(user).length)
+      throw new BadRequestException('user not found');
+    if ('_id' in user) {
+      const post = await this.postModel.create({
+        ...body,
+        user: user._id,
+      });
+      await this.usersService.addPostId(user._id, post._id);
+      return post;
+    }
+  }
+
+  update(id: mongoose.Schema.Types.ObjectId, updatePostDto: UpdatePostDto) {
+    return this.postModel.updateOne(id, updatePostDto)
+  }
+
+  async remove(id, userId, role) {
+    const post = await this.postModel.findById(id);
+
     if (!post) {
-      throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
-    }
-    return post;
-  }
-
-  create(createPostDto: CreatePostDto, userId: number) {
-    const lastId = this.posts[this.posts.length - 1]?.id || 0;
-    const user = this.usersService.getUserById(userId);
-    if (Array.isArray(user)) throw new BadRequestException('user not');
-    const newPost = {
-      id: lastId + 1,
-      title: createPostDto.title,
-      content: createPostDto.content,
-      // problem can not type
-      // userEmail: user.email,
-      userEmail: '',
-    };
-
-    this.posts.push(newPost);
-    return newPost;
-  }
-
-  update(id: number, updatePostDto: UpdatePostDto) {
-    const index = this.posts.findIndex((el) => el.id === id);
-    if (index === -1) {
-      throw new HttpException('Post ID is invalid', HttpStatus.BAD_REQUEST);
+      throw new BadGatewayException('Expense not found');
     }
 
-    const updatedPost = {
-      ...this.posts[index],
-      ...updatePostDto,
-    };
-
-    this.posts[index] = updatedPost;
-    return updatedPost;
-  }
-
-  remove(id: number) {
-    const index = this.posts.findIndex((el) => el.id === id);
-    if (index === -1) {
-      throw new HttpException('Post ID is invalid', HttpStatus.BAD_REQUEST);
+    if (role === 'admin' || userId === post.user.toString()) {
+      const deletedPost = await this.postModel.findByIdAndDelete(id);
+      return { message: 'post deleted', data: deletedPost };
     }
 
-    const deletedPost = this.posts.splice(index, 1);
-    return deletedPost;
+    throw new BadGatewayException('Permission denied');
   }
 }
