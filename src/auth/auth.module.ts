@@ -4,7 +4,6 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { _ } from '@faker-js/faker/dist/airline-BnpeTvY9';
 
 @Module({
   imports: [
