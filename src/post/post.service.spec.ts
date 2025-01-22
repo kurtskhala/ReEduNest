@@ -1,6 +1,6 @@
 import mongoose, { Model } from "mongoose";
 import { PostService } from "./post.service";
-import { UsersService } from "src/users/users.service";
+import { UsersService } from "../users/users.service";
 import { Post } from "./schema/post.schema";
 
 describe('PostService', () => {

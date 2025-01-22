@@ -14,8 +14,8 @@ import { IUser } from './user.interface';
 import { faker } from '@faker-js/faker';
 import { QueryParamsDto } from './DTOs/queryParams.dto';
 import { QueryParamsAgeDto } from './DTOs/queryParamsAge.dto';
-import { Post } from 'src/post/schema/post.schema';
-import { Expense } from 'src/expenses/schema/expenses.schema';
+import { Post } from '../post/schema/post.schema';
+import { Expense } from '../expenses/schema/expenses.schema';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
@@ -59,7 +59,7 @@ export class UsersService implements OnModuleInit {
   }
 
   async findOneByEmail(email: string) {
-    const user = await this.userModel.findOne({ email }).select('+password');
+    const user = await this.userModel.findOne({ email });
     return user;
   }
 

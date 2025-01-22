@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { CreateExpense } from './DTOs/create-expenses.dto';
 import { UpdateExpense } from './DTOs/update-expenses.dto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { Expense } from './schema/expenses.schema';
 import { isValidObjectId, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';

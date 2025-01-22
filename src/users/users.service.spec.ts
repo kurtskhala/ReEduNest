@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { UsersService } from './users.service';
 import { User } from './schema/user.schema';
-import { Post } from 'src/post/schema/post.schema';
-import { Expense } from 'src/expenses/schema/expenses.schema';
+import { Post } from '../post/schema/post.schema';
+import { Expense } from '../expenses/schema/expenses.schema';
 import { BadGatewayException, NotFoundException, BadRequestException } from '@nestjs/common';
-import mongoose, { Model, Schema, Types } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 
 describe('UsersService', () => {
     let service: UsersService;
@@ -73,17 +73,17 @@ describe('UsersService', () => {
 
     describe('findOneByEmail', () => {
         it('should return a user by email', async () => {
-            const user = { email: 'test@test.com', password: 'password' };
+            const user = { email: 'n12bla@gmail.com', password: 'password' };
             jest.spyOn(userModel, 'findOne').mockResolvedValue(user as any);
-            expect(await service.findOneByEmail('test@test.com')).toEqual(user);
+            expect(await service.findOneByEmail('n12bla@gmail.com')).toEqual(user);
         });
     });
 
     describe('getUserById', () => {
         it('should return a user by id', async () => {
-            const user = { _id: '1', name: 'Test User' };
+            const user = { _id: '676d45511b5accc96e75e871', name: 'Test User' };
             jest.spyOn(userModel, 'findById').mockResolvedValue(user as any);
-            expect(await service.getUserById('1')).toEqual(user);
+            expect(await service.getUserById('676d45511b5accc96e75e871')).toEqual(user);
         });
 
         it('should throw an error if id is invalid', async () => {
@@ -133,9 +133,9 @@ describe('UsersService', () => {
 
     describe('updateUser', () => {
         it('should update a user', async () => {
-            const user = { _id: '1', name: 'Updated User' };
+            const user = { _id: '676d45511b5accc96e75e871', name: 'Updated User' };
             jest.spyOn(userModel, 'findByIdAndUpdate').mockResolvedValue(user as any);
-            expect(await service.updateUser('1', user)).toEqual({ message: 'user updated successfully', data: user });
+            expect(await service.updateUser('676d45511b5accc96e75e871', user)).toEqual({ message: 'user updated successfully', data: user });
         });
 
         it('should throw an error if id is invalid', async () => {
@@ -145,7 +145,7 @@ describe('UsersService', () => {
 
     describe('addExpenseId', () => {
         it('should add an expense id to user', async () => {
-            const user = { _id: '1', expenses: [] };
+            const user = { _id: '676d45511b5accc96e75e871', expenses: [] };
             const updatedUser = { ...user, expenses: ['expense1'] };
             jest.spyOn(userModel, 'findById').mockResolvedValue(user as any);
             jest.spyOn(userModel, 'findByIdAndUpdate').mockResolvedValue(updatedUser as any);

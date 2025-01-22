@@ -20,7 +20,7 @@ import { ExpensesService } from './expenses.service';
 import { HasValidUserId } from './hasValidUserId.guard';
 import { CreateExpense } from './DTOs/create-expenses.dto';
 import { UpdateExpense } from './DTOs/update-expenses.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('expenses')
 export class ExpensesController {

@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post } from './schema/post.schema';
 import mongoose, { isValidObjectId, Model } from 'mongoose';

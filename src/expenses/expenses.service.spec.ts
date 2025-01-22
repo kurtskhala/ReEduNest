@@ -1,6 +1,6 @@
 import mongoose, { Model } from "mongoose";
 import { ExpensesService } from "./expenses.service";
-import { UsersService } from "src/users/users.service";
+import { UsersService } from "../users/users.service";
 import { Expense } from "./schema/expenses.schema";
 
 describe('ExpensesService', () => {
@@ -44,7 +44,7 @@ describe('ExpensesService', () => {
           populate: jest.fn().mockResolvedValue(mockExpense)
         } as any);
   
-        const result = await service.getExpenseById(mockId);
+        const result = await service.getExpenseById("676d45511b5accc96e75e871");
         expect(result).toEqual(mockExpense);
       });
   
@@ -131,14 +131,14 @@ describe('ExpensesService', () => {
           totalPrice: 60
         } as any);
   
-        const result = await service.updateExpense(mockId, updateData);
+        const result = await service.updateExpense("676d45511b5accc96e75e871", updateData);
         expect(result.data.totalPrice).toBe(60);
       });
   
       it('should throw error if expense not found', async () => {
         jest.spyOn(expenseModel, 'findById').mockResolvedValue(null);
   
-        await expect(service.updateExpense(mockId, { price: 10 }))
+        await expect(service.updateExpense("676d45511b5accc96e75e871", { price: 10 }))
           .rejects
           .toThrow('Expense not found');
       });

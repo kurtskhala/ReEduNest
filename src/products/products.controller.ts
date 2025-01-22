@@ -16,7 +16,7 @@ import {
 import { ProductsService } from './products.service';
 import { CategoryPipes } from './Pipes/Category.pipes';
 import { Permission } from './permissions.guard';
-import { HasUser } from 'src/guards/hasUser.guard';
+import { HasUser } from '../guards/hasUser.guard';
 import {
   ApiBearerAuth,
   ApiOkResponse,

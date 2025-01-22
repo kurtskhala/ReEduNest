@@ -12,10 +12,10 @@ import {
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { IsAdmin, IsEditor, IsViewer, Permission } from './permissions.guard';
-import { HasUser } from 'src/guards/hasUser.guard';
-import { IsValidMongoId } from 'src/users/DTOs/isValidMongoId.dto';
+import { HasUser } from '../guards/hasUser.guard';
+import { IsValidMongoId } from '../users/DTOs/isValidMongoId.dto';
 import {
   ApiBearerAuth,
   ApiTags,

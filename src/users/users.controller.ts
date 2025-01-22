@@ -23,9 +23,9 @@ import { CreateUserDto } from './DTOs/create-user.dto';
 import { UpdateUserDto } from './DTOs/update-user.dto';
 import { QueryParamsDto } from './DTOs/queryParams.dto';
 import { QueryParamsAgeDto } from './DTOs/queryParamsAge.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { User } from './users.decotator';
-import { IsAdmin } from 'src/post/permissions.guard';
+import { IsAdmin } from '../post/permissions.guard';
 import { IsValidMongoId } from './DTOs/isValidMongoId.dto';
 
 @Controller('users')

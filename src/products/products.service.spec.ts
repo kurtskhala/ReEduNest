@@ -1,4 +1,4 @@
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { ProductsService } from './products.service';
 
 describe('ProductsService', () => {

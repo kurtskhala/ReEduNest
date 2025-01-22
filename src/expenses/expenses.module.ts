@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { ExpensesController } from './expenses.controller';
 import { ExpensesService } from './expenses.service';
-import { UserAgentMiddleware } from 'src/middlewares/user-agent.middleware';
-import { PermissionMiddleware } from 'src/middlewares/permission.middleware';
-import { TimeMiddleware } from 'src/middlewares/time.middleware';
-import { UsersModule } from 'src/users/users.module';
+import { UserAgentMiddleware } from '../middlewares/user-agent.middleware';
+import { PermissionMiddleware } from '../middlewares/permission.middleware';
+import { TimeMiddleware } from '../middlewares/time.middleware';
+import { UsersModule } from '../users/users.module';
 import { Expense, ExpenseSchema } from './schema/expenses.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
