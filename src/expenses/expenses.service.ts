@@ -61,7 +61,7 @@ export class ExpensesService {
     throw new BadGatewayException('Permission denied');
   }
 
-  async updateExpense(id: number, body: UpdateExpense) {
+  async updateExpense(id, body: UpdateExpense) {
     if (!isValidObjectId(id))
       throw new BadGatewayException('Not valid id is provided');
 
