@@ -14,14 +14,14 @@ export class AuthService {
 
   async signUp(signUpDto: SignUpDto) {
     const existUser = await this.usersService.findOneByEmail(signUpDto.email);
+    console.log(signUpDto);
     if (existUser) throw new BadRequestException('User already exists');
-
     const hashedPass = await bcrypt.hash(signUpDto.password, 10);
     await this.usersService.createUser({ ...signUpDto, password: hashedPass });
     return 'user created successfully';
   }
 
-  async signIn(signInDto: SignInDto) {
+  async signIn(signInDto: SignInDto) {    
     const existUser = await this.usersService.findOneByEmail(signInDto.email);
     if (!existUser)
       throw new BadRequestException('Email or passwor is not correct');
@@ -38,6 +38,7 @@ export class AuthService {
     const accessToken = await this.jwtService.sign(payload, {
       expiresIn: '1h',
     });
+console.log(accessToken);
 
     return { accessToken };
   }

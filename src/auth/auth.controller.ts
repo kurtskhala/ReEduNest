@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './DTO/sign-up.dto';
 import { SignInDto } from './DTO/sign-in.dto';
@@ -10,11 +19,17 @@ import {
   ApiOkResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Multer } from 'multer';
 import { register } from 'module';
+import { UsersService } from 'src/users/users.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private usersService: UsersService,
+  ) {}
 
   @ApiCreatedResponse({ example: 'user registered successfully' })
   @ApiBadRequestResponse({
@@ -25,8 +40,17 @@ export class AuthController {
     },
   })
   @Post('sign-up')
-  signUp(@Body() signUpDto: SignUpDto) {
-    return this.authService.signUp(signUpDto);
+  @UseInterceptors(FileInterceptor('avatar'))
+  async signUp(
+    @UploadedFile() avatar: Multer.File,
+    @Body() signUpDto: SignUpDto
+  ) {    
+    const path = Math.random().toString().substring(2);
+    const filePath = `images/${path}`;
+    const avatarPath = avatar
+      ? await this.usersService.uploadImage(filePath, avatar.buffer)
+      : '';
+    return this.authService.signUp({ ...signUpDto, avatar: avatarPath });
   }
 
   @ApiOkResponse({

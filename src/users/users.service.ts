@@ -16,6 +16,7 @@ import { QueryParamsDto } from './DTOs/queryParams.dto';
 import { QueryParamsAgeDto } from './DTOs/queryParamsAge.dto';
 import { Post } from '../post/schema/post.schema';
 import { Expense } from '../expenses/schema/expenses.schema';
+import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
@@ -39,6 +40,7 @@ export class UsersService implements OnModuleInit {
     // await this.userModel.deleteMany();
   }
   constructor(
+    private awsS3Service: AwsS3Service,
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Post.name) private postModel: Model<Post>,
     @InjectModel(Expense.name) private expenseModel: Model<Expense>,
@@ -59,15 +61,20 @@ export class UsersService implements OnModuleInit {
   }
 
   async findOneByEmail(email: string) {
-    const user = await this.userModel.findOne({ email });
+    const user = await this.userModel.findOne({ email }).select('password');
+    
     return user;
   }
 
-  async getUserById(id): Promise<IUser> {
+  async getUserById(id) {
 
     if (!isValidObjectId(id))
       throw new BadGatewayException('Not valid id is provided');
-    return this.userModel.findById(id);
+  
+    const user = await this.userModel.findById(id);
+    const avatar = user.avatar ? await this.getImage(user.avatar) : null;
+  
+    return { ...user.toObject(), avatar };
   }
 
   async getUsersByAge(age: number, query: QueryParamsAgeDto) {
@@ -142,5 +149,17 @@ export class UsersService implements OnModuleInit {
       },
     );
     return updatedUser;
+  }
+
+  uploadImage(filePath, file) {
+    return this.awsS3Service.uploadImage(filePath, file);
+  }
+
+  getImage(fileId) {
+    return this.awsS3Service.getImageByFileId(fileId);
+  }
+
+  deleteImage(fileId) {
+    return this.awsS3Service.deleteImageByFileId(fileId);
   }
 }

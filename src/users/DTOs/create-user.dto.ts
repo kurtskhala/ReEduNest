@@ -51,4 +51,11 @@ export class CreateUserDto {
   @IsString()
   @Length(4, 20)
   password: string;
+
+  @ApiProperty({
+    example: 'image/2343545464',
+  })
+  @IsNotEmpty()
+  @IsString()
+  avatar: string;
 }

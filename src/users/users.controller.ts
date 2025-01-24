@@ -9,7 +9,9 @@ import {
   Put,
   Query,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -27,6 +29,8 @@ import { AuthGuard } from '../auth/auth.guard';
 import { User } from './users.decotator';
 import { IsAdmin } from '../post/permissions.guard';
 import { IsValidMongoId } from './DTOs/isValidMongoId.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Multer } from 'multer';
 
 @Controller('users')
 export class UsersController {
@@ -43,9 +47,9 @@ export class UsersController {
         gender: 'Male',
         age: 25,
         posts: [],
-        expenses: []
-      }
-    ]
+        expenses: [],
+      },
+    ],
   })
   @Get()
   getUsers(@Query() params: QueryParamsDto) {
@@ -58,9 +62,9 @@ export class UsersController {
         _id: '678ffdd8cfb634f37376f26c2',
         firstName: 'John',
         lastName: 'Doe',
-        age: 25
-      }
-    ]
+        age: 25,
+      },
+    ],
   })
   @Get('age/range')
   getUsersByAgeRange(@Query() query: QueryParamsAgeDto) {
@@ -73,9 +77,9 @@ export class UsersController {
         _id: '678ffdd8cfb634f37376f26c2',
         firstName: 'John',
         lastName: 'Doe',
-        age: 25
-      }
-    ]
+        age: 25,
+      },
+    ],
   })
   @ApiParam({ name: 'age', example: 25 })
   @Get('age/:age')
@@ -87,7 +91,7 @@ export class UsersController {
   }
 
   @ApiOkResponse({
-    example: 150
+    example: 150,
   })
   @Get('countUsers')
   getCountUsers() {
@@ -105,16 +109,16 @@ export class UsersController {
         email: 'john.updated@example.com',
         phoneNumber: '+1234567890',
         gender: 'Male',
-        age: 26
-      }
-    }
+        age: 26,
+      },
+    },
   })
   @ApiBadRequestResponse({
     example: {
       message: 'Not valid id is provided',
       error: 'Bad Gateway',
-      status: 502
-    }
+      status: 502,
+    },
   })
   @Put('')
   @UseGuards(AuthGuard)
@@ -130,16 +134,16 @@ export class UsersController {
         _id: '678ffdd8cfb634f37376f26c2',
         firstName: 'John',
         lastName: 'Doe',
-        email: 'john.doe@example.com'
-      }
-    }
+        email: 'john.doe@example.com',
+      },
+    },
   })
   @ApiUnauthorizedResponse({
     example: {
       message: 'Unauthorized',
       error: 'Unauthorized',
-      status: 401
-    }
+      status: 401,
+    },
   })
   @Delete('')
   @UseGuards(AuthGuard)
@@ -155,20 +159,39 @@ export class UsersController {
         _id: '678ffdd8cfb634f37376f26c2',
         firstName: 'John',
         lastName: 'Doe',
-        email: 'john.doe@example.com'
-      }
-    }
+        email: 'john.doe@example.com',
+      },
+    },
   })
   @ApiUnauthorizedResponse({
     example: {
       message: 'Unauthorized',
       error: 'Unauthorized',
-      status: 401
-    }
+      status: 401,
+    },
   })
   @Delete(':id')
   @UseGuards(AuthGuard, IsAdmin)
   deleteOtherUser(@Param() params: IsValidMongoId) {
     return this.usersService.deleteUser(params.id);
+  }
+
+  // @Post('/uploadImage')
+  // @UseInterceptors(FileInterceptor('file'))
+  // uploadFile(@UploadedFile() file: Multer.File) {
+  //   const path = Math.random().toString().substring(2);
+  //   const filePath = `images/${path}`;
+  //   return this.usersService.uploadImage(filePath, file.buffer);
+  // }
+
+  // @Post('/getImage')
+  // getImage(@Body("fileId") fileId: string) {
+  //   return this.usersService.getImage(fileId);
+  // }
+
+  @Post("/deleteImage")
+  @UseGuards(AuthGuard)
+  deleteImage(@Body("fileId") fileId: string) {
+    return this.usersService.deleteImage(fileId);
   }
 }

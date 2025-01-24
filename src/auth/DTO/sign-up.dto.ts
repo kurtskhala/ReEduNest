@@ -46,8 +46,8 @@ export class SignUpDto {
     example: 25
   })
   @IsNotEmpty()
-  @IsNumber()
-  age: number;
+  @IsString()
+  age: string;
 
   @ApiProperty({
     example: "password",
@@ -58,4 +58,11 @@ export class SignUpDto {
   @IsString()
   @Length(4, 20)
   password: string;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'Avatar file upload',
+  })
+  avatar: any;
 }

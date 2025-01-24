@@ -28,6 +28,9 @@ export class User {
   @Prop({ type: String, default: Role.USER })
   role: string;
 
+  @Prop({ type: String })
+  avatar: string;
+
   @Prop({
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'Expense',

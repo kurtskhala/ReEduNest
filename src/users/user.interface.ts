@@ -8,4 +8,5 @@ export class IUser {
   phoneNumber: string;
   gender: string;
   role: string;
+  avatar: any;
 }

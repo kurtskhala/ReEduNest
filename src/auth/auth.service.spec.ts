@@ -49,7 +49,8 @@ describe('AuthService', () => {
         lastName: 'kurt',
         phoneNumber: '551',
         gender: 'Male',
-        age: 0
+        age: "0",
+        avatar: 'avatar',
     };
 
     it('should successfully create a new user', async () => {
