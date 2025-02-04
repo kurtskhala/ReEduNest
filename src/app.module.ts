@@ -21,6 +21,7 @@ import { AwsS3Module } from './aws-s3/aws-s3.module';
     AuthModule,
     AwsS3Module,
   ],
+  
   controllers: [AppController],
   providers: [AppService],
 })
